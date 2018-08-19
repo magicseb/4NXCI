@@ -13,7 +13,7 @@ all:
 .c.o:
 	$(CC) $(INCLUDE) -c $(CFLAGS) -o $@ $<
 
-4nxci: sha.o aes.o extkeys.o pki.o hfs0.o utils.o nsp.o nca.o xci.o main.o filepath.o ConvertUTF.o
+4nxci: sha.o aes.o extkeys.o pki.o hfs0.o utils.o nsp.o nca.o dummy.o cnmt.o xci.o main.o filepath.o ConvertUTF.o
 	$(CC) -o $@ $^ $(LDFLAGS) -L $(LIBDIR)
 
 aes.o: aes.h types.h
@@ -24,11 +24,15 @@ filepath.o: filepath.c types.h
 
 hfs0.o: hfs0.h types.h
 
-main.o: main.c pki.h types.h
+main.o: main.c pki.h types.h version.h
 
 pki.o: pki.h aes.h types.h
 
-nsp.o: nsp.h dummy_files.h
+nsp.o: nsp.h
+
+dummy.o: dummy.h dummy_files.h
+
+cnmt.o: cnmt.h
 
 nca.o: nca.h aes.h sha.h bktr.h filepath.h types.h pfs0.h npdm.h nca0_romfs.h
 
@@ -48,11 +52,11 @@ clean_full:
 	cd mbedtls && $(MAKE) clean
 
 dist: clean_full
-	$(eval 4NXCIVER = $(shell grep '\b4NXCI_VERSION\b' version.h \
+	$(eval NXCIVER = $(shell grep '\bNXCI_VERSION\b' version.h \
 		| cut -d' ' -f3 \
 		| sed -e 's/"//g'))
-	mkdir 4nxci-$(4NXCIVER)
-	cp -R *.c *.h config.mk.template Makefile README.md LICENSE mbedtls 4nxci-$(4NXCIVER)
-	tar czf 4nxci-$(4NXCIVER).tar.gz 4nxci-$(4NXCIVER)
-	rm -r 4nxci-$(4NXCIVER)
+	mkdir 4nxci-$(NXCIVER)
+	cp -R *.c *.h config.mk.template Makefile README.md LICENSE mbedtls 4nxci-$(NXCIVER)
+	tar czf 4nxci-$(NXCIVER).tar.gz 4nxci-$(NXCIVER)
+	rm -r 4nxci-$(NXCIVER)
 
